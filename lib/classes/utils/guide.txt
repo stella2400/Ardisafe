@@ -1,0 +1,51 @@
+1) GET con query string
+$client = new HttpClient('127.0.0.1', 8080, 'api/users', 'GET');
+$res = $client
+    ->addQuery(['page' => 1, 'per_page' => 20])
+    ->send();
+
+if ($res['ok']) {
+    print_r($res['json']); // se la risposta è JSON
+} else {
+    error_log("Errore {$res['http_code']}: " . ($res['error'] ?? 'HTTP error'));
+}
+
+
+
+2) POST JSON (tipico per REST)
+$client = new HttpClient('api.miodominio.it', 443, 'v1/items', 'POST');
+$res = $client
+    ->setScheme('https')
+    ->sendAsJson(true)
+    ->setBearerToken('MI0TOK3N')
+    ->setBody([
+        'name' => 'Notebook',
+        'price' => 999.90,
+        'tags'  => ['tech', 'laptop']
+    ])
+    ->send();
+
+echo $res['http_code'];
+print_r($res['json']);
+
+
+3) PUT form-url-encoded + Basic Auth
+$client = new HttpClient('10.0.0.5', 8000, 'service/update', 'PUT');
+$res = $client
+    ->setBasicAuth('admin', 's3greto')
+    ->setBody(['status' => 'active', 'level' => 3]) // form
+    ->send();
+
+var_dump($res['headers']);
+echo $res['body'];
+
+
+
+4) DELETE con body raw (testo/XML) e header personalizzato
+$client = new HttpClient('192.168.1.50', 8081, 'items/123', 'DELETE');
+$res = $client
+    ->addHeaders(['X-Trace-Id' => 'abc-123'])
+    ->setBody('<delete reason="expired" />') // raw
+    ->send();
+
+echo $res['http_code'];

@@ -1,0 +1,510 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+4 0 obj
+<< /Length 2133 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 56 786 Tm
+16 TL
+/F3 18.00 Tf
+22.00 TL
+(Guida alle Classi Frontend PHP \(CLTable, CLForm,) Tj
+T*
+(CLButton, CLCard, CLWidget\)) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(Questa guida pratica spiega come usare una piccola libreria di classi PHP per) Tj
+T*
+(generare UI frontend senza scrivere HTML a mano. Ogni classe offre: API fluente, CSS) Tj
+T*
+(integrato opzionale, escaping sicuro per prevenire XSS, e opzioni per contenuto raw) Tj
+T*
+(quando serve.) Tj
+T*
+T*
+(? CLTable: crea tabelle complete \(caption, thead/tbody/tfoot, colgroup\).) Tj
+T*
+(? CLForm: costruisci form accessibili con campi, help, errori, file upload e CSRF.) Tj
+T*
+(? CLButton: pulsanti e gruppi con varianti, taglie, icone e stato loading.) Tj
+T*
+(? CLCard: card modulari con header/media/body/footer e badge.) Tj
+T*
+(? CLWidget: mini widget di metrica con sparkline, progresso e footer azioni.) Tj
+T*
+T*
+(Tutti gli esempi richiedono PHP 8.0+. Ogni classe inietta il proprio CSS integrato) Tj
+T*
+(una sola volta per richiesta; puoi disattivarlo con noDefaultCss\(\) se preferisci) Tj
+T*
+(usare i tuoi stili.) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(Indice) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(? 1. Installazione e struttura dei file) Tj
+T*
+(? 2. Convenzioni comuni \(API, sicurezza, CSS\)) Tj
+T*
+(? 3. CLTable ? Tabelle) Tj
+T*
+(? 4. CLForm ? Form) Tj
+T*
+(? 5. CLButton ? Pulsanti) Tj
+T*
+(? 6. CLCard ? Card) Tj
+T*
+(? 7. CLWidget ? Widget) Tj
+T*
+(? 8. FAQ & Troubleshooting) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(1. Installazione e struttura dei file) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(Copia i file PHP nella tua codebase \(ad es. in /lib/ui/\): CLTable.php, CLForm.php,) Tj
+T*
+(CLButton.php, CLCard.php, CLWidget.php.) Tj
+T*
+T*
+/F2 10.00 Tf
+14.00 TL
+(```) Tj
+T*
+(require_once __DIR__ . '/lib/ui/CLTable.php';) Tj
+T*
+(require_once __DIR__ . '/lib/ui/CLForm.php';) Tj
+T*
+(require_once __DIR__ . '/lib/ui/CLButton.php';) Tj
+T*
+(require_once __DIR__ . '/lib/ui/CLCard.php';) Tj
+T*
+(require_once __DIR__ . '/lib/ui/CLWidget.php';) Tj
+T*
+(```) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(Suggerimento: crea un semplice autoloader \(PSR-4 o simile\) e mappa lo spazio dei) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 14 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2237 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 56 786 Tm
+16 TL
+(nomi se preferisci.) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(2. Convenzioni comuni \(API, sicurezza, CSS\)) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(? Pattern: start\(...\)->metodi\(\)->render\(\).) Tj
+T*
+(? Escaping: testi escapati di default con htmlspecialchars; usa flag 'raw' dove) Tj
+T*
+(  previsto per HTML fidato.) Tj
+T*
+(? Accessibilit‡: label/for nei form, scope='col' nelle tabelle, aria-* generabili) Tj
+T*
+(  via setAttr\(\)/aria\(\).) Tj
+T*
+(? CSS: integrato e attivo di default; disattiva con ->noDefaultCss\(\); alcune) Tj
+T*
+(  classi prevedono varianti \(theme/variant\).) Tj
+T*
+(? Output: render\(\) restituisce la stringa HTML; __toString\(\) permette echo diretto) Tj
+T*
+(  dell'istanza.) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(3. CLTable ? Tabelle) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(CLTable genera tabelle complete con caption, colgroup, thead, tbody e tfoot. Stile) Tj
+T*
+(integrato con varianti 'zebra' \(default\) e 'minimal'.) Tj
+T*
+T*
+/F2 10.00 Tf
+14.00 TL
+(```) Tj
+T*
+(// Esempio base) Tj
+T*
+($t = \(new CLTable\(\)\)) Tj
+T*
+(->theme\('zebra'\) // opzionale: 'zebra' | 'minimal') Tj
+T*
+(->start\(['id'=>'ordini']\)) Tj
+T*
+(->caption\('Elenco ordini'\)) Tj
+T*
+(->header\(['#','Cliente','Data','Totale','Stato'], [], ['scope'=>'col']\)) Tj
+T*
+(->row\([1,'Mario Rossi','2025-09-10','? 120,00',['text'=>'<span) Tj
+T*
+(class="badge">Pagato</span>','raw'=>true]]\)) Tj
+T*
+(->row\([2,'ACME','2025-09-12','? 89,90',['text'=>'<span class="badge badge-warn">In) Tj
+T*
+(attesa</span>','raw'=>true]]\)) Tj
+T*
+(->footer\([['text'=>'Totale','attrs'=>['colspan'=>4,'class'=>'text-right']], '? 209,90']\);) Tj
+T*
+(echo $t; // oppure echo $t->render\(\);) Tj
+T*
+(```) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(? start\(attrs\): imposta attributi/table class.) Tj
+T*
+(? header\(cols, rowAttrs, defaultCellAttrs\): aggiunge una riga di thead con <th>.) Tj
+T*
+(? row\(cells, rowAttrs, defaultCellAttrs\): aggiunge righe al tbody.) Tj
+T*
+(? footer\(cells, rowAttrs, defaultCellAttrs\): aggiunge righe al tfoot.) Tj
+T*
+(? caption\(text, attrs\), colgroup\(cols\): opzionali.) Tj
+T*
+T*
+(Suggerimenti: usa 'raw'=>true per inserire HTML trusted nella cella \(badge, link,) Tj
+T*
+(icone\).) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 14 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 2249 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 56 786 Tm
+16 TL
+(4. CLForm ? Form) Tj
+T*
+T*
+(CLForm crea form accessibili con campi comuni, help/error, method spoof e upload) Tj
+T*
+(file \(enctype automatico\).) Tj
+T*
+T*
+/F2 10.00 Tf
+14.00 TL
+(```) Tj
+T*
+($form = \(new CLForm\(\)\)) Tj
+T*
+(->start\('/contact/submit','POST',['id'=>'contact-form']\)) Tj
+T*
+(->csrf\('_token','ABC123'\)) Tj
+T*
+(->text\('name','Nome',['required'=>true,'placeholder'=>'Mario Rossi']\)) Tj
+T*
+(->email\('email','Email',['required'=>true,'help'=>'Non condivideremo la tua email.']\)) Tj
+T*
+(->textarea\('message','Messaggio',['rows'=>5,'required'=>true]\)) Tj
+T*
+(->checkbox\('privacy','Accetto la privacy',['required'=>true]\)) Tj
+T*
+(->submit\('Invia'\)->reset\('Annulla'\);) Tj
+T*
+(echo $form;) Tj
+T*
+(```) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(? Campi:) Tj
+T*
+(  text/email/password/number/date/tel/url/file/hidden/textarea/select/radioGroup/checkbox.) Tj
+T*
+(? select: supporta placeholder e optgroup; usa 'value' \(o array per multiple\).) Tj
+T*
+(? radioGroup: choices come ['val'=>'Etichetta']; 'inline'=>true per layout) Tj
+T*
+(  orizzontale.) Tj
+T*
+(? Sicurezza: escaping di default; per innerHTML usa 'raw'=>true \(solo se fidato\).) Tj
+T*
+(? Method spoof: ->methodSpoof\('PUT'|'PATCH'|'DELETE'\) aggiunge hidden _method.) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(5. CLButton ? Pulsanti) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(CLButton genera pulsanti singoli o gruppi \(toolbar\) con varianti e icone, inclusi) Tj
+T*
+(link-as-button e stato loading.) Tj
+T*
+T*
+/F2 10.00 Tf
+14.00 TL
+(```) Tj
+T*
+(\(new CLButton\(\)\)->single\('Salva', ['variant'=>'primary','size'=>'md']\);) Tj
+T*
+() Tj
+T*
+(// Gruppo unito) Tj
+T*
+(echo \(new CLButton\(\)\)) Tj
+T*
+(->startGroup\(['merge'=>true]\)) Tj
+T*
+(->button\('Indietro',['variant'=>'ghost']\)) Tj
+T*
+(->submit\('Salva',['variant'=>'success']\)) Tj
+T*
+(->button\('Elimina',['variant'=>'danger']\)) Tj
+T*
+(->render\(\);) Tj
+T*
+(```) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(? Varianti: primary, secondary, outline, ghost, success, danger.) Tj
+T*
+(? Taglie: sm, md, lg; full width con 'full'=>true.) Tj
+T*
+(? Icone: passa HTML raw in 'iconLeft'/'iconRight' \(SVG o emoji\).) Tj
+T*
+(? Link: ->link\('Testo','/url', [...]\) con role='button'.) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 14 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2181 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 56 786 Tm
+16 TL
+(6. CLCard ? Card) Tj
+T*
+T*
+(CLCard compone card con header \(titolo/sottotitolo/azioni\), media \(img o slot raw\),) Tj
+T*
+(body \(blocchi o liste\) e footer.) Tj
+T*
+T*
+/F2 10.00 Tf
+14.00 TL
+(```) Tj
+T*
+($actions = \(new CLButton\(\)\)->single\('Acquista',['variant'=>'success']\);) Tj
+T*
+(echo \(new CLCard\(\)\)) Tj
+T*
+(->theme\('elevated'\)) Tj
+T*
+(->start\(['id'=>'card-prodotto']\)) Tj
+T*
+(->badge\('Nuovo'\)) Tj
+T*
+(->media\('/img/prod-123.jpg','Scarpa', ['ratio'=>'4/3']\)) Tj
+T*
+(->header\('Scarpa Pro Max','Drop 8mm ∑ Mesh',$actions\)) Tj
+T*
+(->body\('Ammortizzazione reattiva, suola in gomma anti-scivolo.'\)) Tj
+T*
+(->list\(['Spedizione gratis','Reso 30 giorni']\)) Tj
+T*
+(->footer\(\(new CLButton\(\)\)->single\('Dettagli',['variant'=>'outline']\), true\)) Tj
+T*
+(->render\(\);) Tj
+T*
+(```) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(7. CLWidget ? Widget) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(CLWidget mostra metriche sintetiche con icona, valore, delta \(positivo/negativo\),) Tj
+T*
+(sparkline SVG e barra di progresso.) Tj
+T*
+T*
+/F2 10.00 Tf
+14.00 TL
+(```) Tj
+T*
+($icon = '?';) Tj
+T*
+(echo \(new CLWidget\(\)\)) Tj
+T*
+(->variant\('success'\)) Tj
+T*
+(->start\(['id'=>'w-sales']\)) Tj
+T*
+(->icon\('<span style="font-size:18px;">'.$icon.'</span>'\)) Tj
+T*
+(->metric\('? 12.450','Vendite mese','+8.3%','pos'\)) Tj
+T*
+(->sparkline\([8,9,7,10,12,11,14,16,15,17], ['width'=>200, 'height'=>48]\)) Tj
+T*
+(->progress\(72, '72% target'\)) Tj
+T*
+(->footerRaw\(\(new) Tj
+T*
+(CLButton\(\)\)->startGroup\(['merge'=>true]\)->button\('Report',['variant'=>'secondary']\)->button\('Esporta',['variant'=>'outline']\)->render\(\)\)) Tj
+T*
+(->render\(\);) Tj
+T*
+(```) Tj
+T*
+T*
+T*
+/F3 14.00 Tf
+18.00 TL
+(8. FAQ & Troubleshooting) Tj
+T*
+T*
+/F1 11.00 Tf
+16.00 TL
+(? Non vedo lo stile: assicurati di non aver chiamato noDefaultCss\(\); lo <style>) Tj
+T*
+(  viene iniettato una sola volta per richiesta.) Tj
+T*
+(? HTML non desiderato nelle celle: l'escaping Ë attivo di default; controlla di) Tj
+T*
+(  non aver usato 'raw'=>true su contenuti non fidati.) Tj
+T*
+(? Form file upload non invia file: l'enctype Ë impostato auto quando usi) Tj
+T*
+(  ->file\(...\).) Tj
+T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 14 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 388 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 56 786 Tm
+16 TL
+(? Accessibilit‡: usa label per i campi, scope='col' per th e attributi aria-* dove) Tj
+T*
+(  sensato.) Tj
+T*
+(? Compatibilit‡ CSS: gli stili sono vanilla CSS, facilmente sovrascrivibili nella) Tj
+T*
+(  tua codebase.) Tj
+T*
+T*
+(Versione documentazione: 1.0 ? Ultimo aggiornamento automatico.) Tj
+T*
+(Autore: Libreria UI PHP \(serie CL*\).) Tj
+T*
+T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 14 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Type /Pages /Kids [ 5 0 R 7 0 R 9 0 R 11 0 R 13 0 R ] /Count 5 >>
+endobj
+15 0 obj
+<< /Type /Catalog /Pages 14 0 R >>
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000015 00000 n 
+0000000085 00000 n 
+0000000153 00000 n 
+0000000228 00000 n 
+0000002413 00000 n 
+0000002560 00000 n 
+0000004849 00000 n 
+0000004996 00000 n 
+0000007297 00000 n 
+0000007444 00000 n 
+0000009678 00000 n 
+0000009827 00000 n 
+0000010267 00000 n 
+0000010416 00000 n 
+0000010502 00000 n 
+trailer
+<< /Size 16 /Root 15 0 R >>
+startxref
+10553
+%%EOF
